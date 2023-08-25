@@ -1,0 +1,33 @@
+- hosts: localhost
+  connection: local
+  become: true
+  tasks:
+    - name: stop nginx
+      systemd:
+        name: nginx
+        state: stopped
+
+    - name: uninstall nginx
+      apt:
+        name: nginx
+        state: absent
+
+    - name: curl url
+      ansible.builtin.uri:
+        url: http://localhost
+      ignore_errors: true
+
+    - name: Display information after uninstalling nginx
+      debug:
+        msg: "Nginx has been uninstalled."
+
+    - name: Remove nginx configuration file
+      file:
+        path: /etc/nginx/nginx.conf
+        state: absent
+
+    - name: Restart nginx if needed
+      service:
+        name: nginx
+        state: restarted
+      when: nginx_config is defined and nginx_config.changed

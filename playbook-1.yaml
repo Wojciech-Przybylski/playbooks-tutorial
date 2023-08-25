@@ -1,0 +1,38 @@
+- hosts: localhost
+  connection: local
+  become: true
+  tasks:
+    - name: install nginx
+      apt:
+        name: nginx
+        state: present
+        update_cache: true
+      register: installnginx
+     # failed_when: installnginx.cache_update_time > 1
+
+    - debug:
+        var: installnginx
+        verbosity: 1
+
+    - name: Copy nginx file over
+      copy:
+        src: nginx.conf
+        dest: /etc/nginx/nginx.conf
+      register: nginx_config
+     # failed_when: "nginx_config.diff.after.path == nginx_config.diff.before.path"
+
+    - name: Display information from the "Copy nginx file over" task
+      debug:
+        msg: "{{ nginx_config }}"
+
+    - name: Restart nginx if needed
+      service:
+        name: nginx
+        state: restarted
+      when: nginx_config.changed == true
+
+    - name: curl url
+      ansible.builtin.uri:
+        url: http://localhost
+      ignore_errors: true
+
