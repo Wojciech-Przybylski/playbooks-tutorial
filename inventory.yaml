@@ -1,15 +1,9 @@
-devservers:
-  hosts:
-    dev1.internal.net
-    dev2.internal.net
-    dev3.internal.net
-testservers:
-  hosts:
-    test1.internal.net
-    test2.internal.net
-    test3.internal.net
-production:
-  host:
-    prod1.internal.net
-    prod2.internal.net
-    prod3.internal.net
+all:
+  children:
+    test:
+      hosts:
+        35.176.244.222:
+        13.41.187.177:
+      vars:
+        ansible_user: ubuntu
+        ansible_ssh_private_key_file: '~/aws_nexus_1.pem'
